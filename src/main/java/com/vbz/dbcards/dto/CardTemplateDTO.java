@@ -1,5 +1,6 @@
 package com.vbz.dbcards.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Data;
 
 @Data
@@ -20,21 +21,25 @@ public class CardTemplateDTO {
     private String companyName;
 
     // contact
+    @JsonAlias({"phoneNumber"})
     private String phoneNumber1;
     private String phoneNumber2;
     private String email;
+    @JsonAlias({"address"})
     private String companyAddress;
 
     // business
     private String businessCategory;
     private String businessSubcategory;
     private String businessDescription;
+    @JsonAlias({"clients"})
     private String clientList;
 
     // social
     private String linkedin;
     private String facebook;
     private String instagram;
+    @JsonAlias({"twitter"})
     private String twitterXLink;
     private String whatsappUrl;
 

@@ -125,10 +125,14 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
 
         logger.error("Unhandled error: ", ex);
+        String message = ex.getMessage();
+        if (message == null || message.isBlank()) {
+            message = "Something went wrong. Please try again later.";
+        }
 
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR,
                 "SYS_500",
-                "Something went wrong. Please try again later.",
+                message,
                 request.getRequestURI());
     }
 
