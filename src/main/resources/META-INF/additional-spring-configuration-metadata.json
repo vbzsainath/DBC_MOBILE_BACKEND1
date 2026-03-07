@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "sms.api-id",
+  "type": "java.lang.String",
+  "description": "A description for 'sms.api-id'"
+}]}
