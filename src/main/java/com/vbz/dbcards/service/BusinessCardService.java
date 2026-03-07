@@ -117,6 +117,7 @@ public class BusinessCardService {
         dto.setPhoneNumber2(card.getPhoneNumber2());
         dto.setEmail(card.getEmail());
         dto.setCompanyAddress(card.getAddress());
+        dto.setKeywords(card.getKeywords());
         dto.setBusinessCategory(card.getBusinessCategory());
         dto.setBusinessSubcategory(card.getBusinessSubcategory());
         dto.setBusinessDescription(card.getBusinessDescription());

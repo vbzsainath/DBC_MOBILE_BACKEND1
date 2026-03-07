@@ -29,6 +29,7 @@ public class CardTemplateDTO {
     private String companyAddress;
 
     // business
+    private String keywords;
     private String businessCategory;
     private String businessSubcategory;
     private String businessDescription;
