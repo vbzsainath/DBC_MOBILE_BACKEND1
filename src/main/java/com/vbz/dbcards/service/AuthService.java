@@ -109,8 +109,13 @@ public class AuthService {
     // ================= LOGIN SEND OTP =================
     public Map<String,Object> mobileLogin(LoginRequest dto){
 
-        User user = userRepo.findByMobileNumber(dto.getMobileNumber())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    	// FIX — return clean 400 response
+    	User user = userRepo.findByMobileNumber(dto.getMobileNumber())
+    	        .orElse(null);
+
+    	if (user == null) {
+    	    return Map.of("status", 0, "message", "Account not found. Please signup first.");
+    	}
 
         if(user.getLoginCooldown()!=null &&
            user.getLoginCooldown().isAfter(LocalDateTime.now()))

@@ -78,20 +78,24 @@ public class AuthController {
     }
 
     // ================= LOGOUT =================
+ // AFTER — also expire the JSESSIONID cookie
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpSession session) {
+    public ResponseEntity<?> logout(
+            HttpSession session,
+            jakarta.servlet.http.HttpServletResponse response) {
 
-        Long userId =
-                (Long) session.getAttribute("LOGGED_IN_USER_ID");
+        Long userId = (Long) session.getAttribute("LOGGED_IN_USER_ID");
 
-        logger.info("Logout request. userId: {}, sessionId: {}",
-                userId, session.getId());
+        logger.info("Logout: userId={}, sessionId={}", userId, session.getId()); // ← fixed
 
         session.invalidate();
 
-        return ResponseEntity.ok(Map.of(
-                "status", 1,
-                "message", "Logged out successfully"
-        ));
+        jakarta.servlet.http.Cookie cookie =
+                new jakarta.servlet.http.Cookie("JSESSIONID", "");
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok(Map.of("status", 1, "message", "Logged out successfully"));
     }
 }
