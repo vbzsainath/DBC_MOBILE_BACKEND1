@@ -2,10 +2,17 @@ package com.vbz.dbcards.controller;
 
 import com.vbz.dbcards.dto.ShareRequest;
 import com.vbz.dbcards.service.PendingShareService;
+
+import jakarta.servlet.http.HttpSession;
+
 import com.vbz.dbcards.dto.UserCheckResponse;
 import com.vbz.dbcards.service.CardShareService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -157,33 +164,79 @@ public class CardShareController {
     // Responses: 200 shareLink+whatsappUrl+smsBody+emailSubject+emailBody
     //            400 missing fields  404 sender/card not found
     // -----------------------------------------------------------------------
+//    @PostMapping("/generate-link")
+//    public ResponseEntity<?> generateLink(
+//            @RequestBody java.util.Map<String, Object> body,
+//            jakarta.servlet.http.HttpSession session) {
+//
+//        Long senderId = (Long) session.getAttribute("LOGGED_IN_USER_ID");
+//        if (senderId == null) {
+//            return ResponseEntity.status(401)
+//                    .body(java.util.Map.of("message", "Session expired. Please login again."));
+//        }
+//
+//        Long cardId = body.get("cardId") instanceof Number ?
+//                ((Number) body.get("cardId")).longValue() : null;
+//        String recipientName   = (String) body.get("recipientName");
+//        Long recipientMobile   = body.get("recipientMobile") instanceof Number ?
+//                ((Number) body.get("recipientMobile")).longValue() : null;
+//        String recipientEmail  = (String) body.get("recipientEmail");
+//
+//        if (cardId == null || recipientMobile == null
+//                || recipientName == null || recipientName.isBlank()) {
+//            throw new IllegalArgumentException(
+//                    "Required fields: cardId, recipientName, recipientMobile");
+//        }
+//
+//        return ResponseEntity.ok(
+//                pendingShareService.generateInviteAndLink(
+//                        senderId, cardId,
+//                        recipientName.trim(), recipientMobile, recipientEmail));
+//    }
+    
+    
     @PostMapping("/generate-link")
     public ResponseEntity<?> generateLink(
-            @RequestBody java.util.Map<String, Object> body,
-            jakarta.servlet.http.HttpSession session) {
+            @RequestBody Map<String, Object> body,
+            HttpSession session) {
 
         Long senderId = (Long) session.getAttribute("LOGGED_IN_USER_ID");
+
         if (senderId == null) {
             return ResponseEntity.status(401)
-                    .body(java.util.Map.of("message", "Session expired. Please login again."));
+                    .body(Map.of("message", "Session expired. Please login again."));
         }
 
-        Long cardId = body.get("cardId") instanceof Number ?
-                ((Number) body.get("cardId")).longValue() : null;
-        String recipientName   = (String) body.get("recipientName");
-        Long recipientMobile   = body.get("recipientMobile") instanceof Number ?
-                ((Number) body.get("recipientMobile")).longValue() : null;
-        String recipientEmail  = (String) body.get("recipientEmail");
+        Long cardId = body.get("cardId") instanceof Number
+                ? ((Number) body.get("cardId")).longValue()
+                : null;
 
-        if (cardId == null || recipientMobile == null
-                || recipientName == null || recipientName.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Required fields: cardId, recipientName, recipientMobile");
+        String recipientName = (String) body.get("recipientName");
+
+        Long recipientMobile = body.get("recipientMobile") instanceof Number
+                ? ((Number) body.get("recipientMobile")).longValue()
+                : null;
+
+        String recipientEmail = (String) body.get("recipientEmail");
+
+        if (cardId == null || recipientMobile == null ||
+                recipientName == null || recipientName.isBlank()) {
+
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message",
+                            "Required fields: cardId, recipientName, recipientMobile"));
         }
 
-        return ResponseEntity.ok(
-                pendingShareService.generateInviteAndLink(
-                        senderId, cardId,
-                        recipientName.trim(), recipientMobile, recipientEmail));
+        // ✅ Generate Plain Text Link
+        String shareLink = "https://card.sharecards.in/" + cardId;
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Link generated successfully");
+        response.put("shareLink", shareLink);
+        response.put("recipientName", recipientName);
+        response.put("recipientMobile", recipientMobile);
+        response.put("recipientEmail", recipientEmail);
+
+        return ResponseEntity.ok(response);
     }
 }

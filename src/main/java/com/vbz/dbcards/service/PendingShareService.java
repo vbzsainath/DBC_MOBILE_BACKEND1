@@ -74,8 +74,8 @@ public class PendingShareService {
 
         String token = ShareTokenUtil.generateToken(cardId, receiverMobile);
 
-        String shareLink = appBaseUrl + "/c/" + token;
-
+     // Generate plain text share link
+        String shareLink = "https://card.sharecards.in/" + cardId;
 
         String senderFullName = buildFullName(sender);
 
